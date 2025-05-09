@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIRDZ - You're a F#@%ING BIRD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(-2deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(-1deg); }
+            25% { transform: translateX(-5px) rotate(1deg); }
+            75% { transform: translateX(5px) rotate(-1deg); }
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; }
+            50% { text-shadow: 0 0 20px #FF0000, 0 0 30px #FF0000, 0 0 40px #FF0000; }
+            100% { text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; }
+        }
+
+        @keyframes explosion {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes glitch {
+            0% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+            14% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+            15% { 
+                transform: translate(-0.025em, 0.025em);
+                text-shadow: -0.05em -0.025em 0 #FF0000, 0.025em 0.025em 0 #FF0000, -0.05em -0.05em 0 #FF0000;
+            }
+            49% { 
+                transform: translate(-0.025em, 0.025em);
+                text-shadow: -0.05em -0.025em 0 #FF0000, 0.025em 0.025em 0 #FF0000, -0.05em -0.05em 0 #FF0000;
+            }
+            50% { 
+                transform: translate(0.025em, -0.025em);
+                text-shadow: 0.025em 0.05em 0 #FF0000, 0.05em 0 0 #FF0000, 0 -0.05em 0 #FF0000;
+            }
+            99% { 
+                transform: translate(0.025em, -0.025em);
+                text-shadow: 0.025em 0.05em 0 #FF0000, 0.05em 0 0 #FF0000, 0 -0.05em 0 #FF0000;
+            }
+            100% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+        }
+
+        @keyframes bloodDrip {
+            0% { 
+                transform: translateY(-100%) scaleY(0);
+                opacity: 1;
+                filter: brightness(1.5) contrast(1.5);
+            }
+            50% {
+                transform: translateY(0) scaleY(1);
+                opacity: 1;
+                filter: brightness(1.5) contrast(1.5);
+            }
+            100% { 
+                transform: translateY(100%) scaleY(0);
+                opacity: 0;
+                filter: brightness(1.5) contrast(1.5);
+            }
+        }
+
+        @keyframes bloodDrop {
+            0% {
+                transform: translateY(-100%) scale(0);
+                opacity: 0;
+                filter: brightness(1.5) contrast(1.5);
+            }
+            20% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: brightness(1.5) contrast(1.5);
+            }
+            80% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: brightness(1.5) contrast(1.5);
+            }
+            100% {
+                transform: translateY(100%) scale(0);
+                opacity: 0;
+                filter: brightness(1.5) contrast(1.5);
+            }
+        }
+
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://crimson-traditional-mastodon-846.mypinata.cloud/ipfs/bafybeicpiafqkulvm6d2uwlm7g4reb2r6nozlvwoqeoufx3gdle3q2mnuq') repeat;
+            opacity: 0.3;
+            z-index: -1;
+            filter: contrast(1.5) brightness(0.7) saturate(2) hue-rotate(-10deg);
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 0%, rgba(255, 0, 0, 0.1) 50%, transparent 100%);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .title {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #FF0000, #FF4500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: explosion 1s ease-out forwards, float 3s ease-in-out infinite, glow 2s ease-in-out infinite, glitch 0.3s infinite;
+            text-shadow: 3px 3px 0 #000;
+            letter-spacing: 2px;
+            position: relative;
+            opacity: 0;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 50px;
+            background: linear-gradient(to bottom, #FF0000, transparent);
+            animation: bloodDrip 2s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 2rem;
+            color: #FF0000;
+            animation: shake 0.5s ease-in-out infinite, glitch 0.3s infinite;
+            cursor: pointer;
+            text-shadow: 2px 2px 0 #000;
+            font-weight: bold;
+        }
+
+        .text {
+            font-size: clamp(1rem, 3vw, 1.6rem);
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 0 #000;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .text:hover {
+            transform: scale(1.05) rotate(-1deg);
+            color: #FF0000;
+            animation: glitch 0.3s infinite;
+        }
+
+        .text::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #FF0000, transparent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .text:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: clamp(1rem, 3vw, 1.5rem) clamp(2rem, 5vw, 3rem);
+            background: #8B0000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transform: perspective(500px) rotateX(0deg);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.3) 0%, transparent 70%);
+            transform: rotate(45deg);
+            animation: rotate 3s linear infinite;
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.2), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .cta-button:hover {
+            transform: perspective(500px) rotateX(10deg) scale(1.1);
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.8);
+            background: #A00000;
+        }
+
+        .cta-button:hover::before {
+            animation: rotate 1s linear infinite;
+        }
+
+        .blood-splash {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(139, 0, 0, 0.8) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .cta-button:hover .blood-splash {
+            opacity: 1;
+        }
+
+        .blood-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at center, #FF0000 0%, transparent 70%);
+            filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5)) brightness(1.5) contrast(1.5);
+            animation: bloodDrop 4s ease-in-out infinite;
+        }
+
+        .blood-drop:nth-child(1) { 
+            top: 10%; 
+            left: 10%; 
+            animation-delay: 0s;
+            width: 40px;
+            height: 40px;
+        }
+        .blood-drop:nth-child(2) { 
+            top: 20%; 
+            right: 15%; 
+            animation-delay: 1s;
+            width: 35px;
+            height: 35px;
+        }
+        .blood-drop:nth-child(3) { 
+            bottom: 15%; 
+            left: 20%; 
+            animation-delay: 2s;
+            width: 45px;
+            height: 45px;
+        }
+        .blood-drop:nth-child(4) { 
+            bottom: 25%; 
+            right: 10%; 
+            animation-delay: 3s;
+            width: 38px;
+            height: 38px;
+        }
+
+        .blood-splatter {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            background: 
+                radial-gradient(circle at 20% 20%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 80% 30%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, #FF0000 0%, transparent 50%);
+            filter: brightness(1.5) contrast(1.5);
+        }
+
+        .explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vmax;
+            height: 100vmax;
+            background: radial-gradient(circle, #FF0000 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+            animation: explosion 1s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            .hero {
+                padding: 0.5rem;
+            }
+            .blood-drop {
+                display: none;
+            }
+        }
+
+        .sound-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FF0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .sound-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+        .sound-button.muted {
+            background: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="explosion"></div>
+    <div class="blood-splatter"></div>
+    <div class="container">
+        <div class="hero">
+            <button id="soundToggle" class="sound-button">🔊</button>
+            <div class="blood-drop"></div>
+            <div class="blood-drop"></div>
+            <div class="blood-drop"></div>
+            <div class="blood-drop"></div>
+            
+            <h1 class="title">BIRDZ</h1>
+            <p class="subtitle">YOU'RE A F#@%ING BIRD</p>
+            <p class="text">WE DON'T KNOW THE NAME. WE DON'T KNOW THE TEAM.<br>
+            But we do know one thing...</p>
+            <p class="text">Pigeon? Hawk? Chicken? BIRD-MAN??<br>
+            Doesn't matter.</p>
+            <p class="text">Feathers on. Brains off.<br>
+            BUY THIS COIN.</p>
+            <p class="text">It's not financial advice… it's instinct.</p>
+            <p class="text">COMING SOON.<br>
+            No roadmap. Just wing it.</p>
+
+            <a href="https://t.me/BIRDSONSOL" class="cta-button" target="_blank">Join Telegram</a>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            const soundToggle = document.getElementById('soundToggle');
+            let isMuted = false;
+            let soundsPlayed = false;
+            let audioContext;
+            let sounds = {};
+
+            // Initialize Web Audio API
+            function initAudio() {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            // Load sound function
+            async function loadSound(url) {
+                try {
+                    const response = await fetch(url);
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                    return audioBuffer;
+                } catch (error) {
+                    console.error('Error loading sound:', error);
+                    return null;
+                }
+            }
+
+            // Play sound function
+            function playSound(buffer) {
+                if (!buffer || isMuted) return;
+                
+                const source = audioContext.createBufferSource();
+                const gainNode = audioContext.createGain();
+                
+                source.buffer = buffer;
+                source.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                source.start(0);
+                return source;
+            }
+
+            // Load all sounds
+            async function loadAllSounds() {
+                const soundUrls = {
+                    explosion: 'https://www.soundjay.com/mechanical/sounds/explosion-01.mp3',
+                    pigeon: 'https://www.soundjay.com/nature/sounds/pigeon-1.mp3',
+                    gunshot: 'https://www.soundjay.com/mechanical/sounds/gun-shot-01.mp3'
+                };
+
+                for (const [name, url] of Object.entries(soundUrls)) {
+                    sounds[name] = await loadSound(url);
+                }
+            }
+
+            // Play all sounds in sequence
+            async function playAllSounds() {
+                if (soundsPlayed || !audioContext) return;
+                soundsPlayed = true;
+
+                try {
+                    // Play explosion
+                    const explosion = playSound(sounds.explosion);
+                    
+                    // Wait 1 second
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Play pigeon
+                    const pigeon = playSound(sounds.pigeon);
+                } catch (error) {
+                    console.error('Error playing sounds:', error);
+                }
+            }
+
+            // Initialize audio on first user interaction
+            function initAudioOnInteraction() {
+                if (!audioContext) {
+                    initAudio();
+                    loadAllSounds().then(() => {
+                        playAllSounds();
+                    });
+                }
+            }
+
+            // Add event listeners for user interaction
+            document.addEventListener('click', initAudioOnInteraction, { once: true });
+            document.addEventListener('keydown', initAudioOnInteraction, { once: true });
+            document.addEventListener('touchstart', initAudioOnInteraction, { once: true });
+
+            // Sound toggle button
+            soundToggle.addEventListener('click', function() {
+                isMuted = !isMuted;
+                if (isMuted) {
+                    soundToggle.textContent = '🔇';
+                    soundToggle.classList.add('muted');
+                    if (audioContext) {
+                        audioContext.suspend();
+                    }
+                } else {
+                    soundToggle.textContent = '🔊';
+                    soundToggle.classList.remove('muted');
+                    if (audioContext) {
+                        audioContext.resume();
+                    }
+                }
+            });
+
+            // Add gunshot sound to Telegram button
+            const telegramButton = document.querySelector('.cta-button');
+            telegramButton.addEventListener('click', function(e) {
+                if (!isMuted && sounds.gunshot) {
+                    playSound(sounds.gunshot);
+                }
+            });
+
+            // Try to initialize audio immediately
+            initAudio();
+            loadAllSounds().then(() => {
+                playAllSounds();
+            });
+        });
+    </script>
+</body>
+</html> 
