@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIRDZ - You're a F#@%ING BIRD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(-2deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(-1deg); }
+            25% { transform: translateX(-5px) rotate(1deg); }
+            75% { transform: translateX(5px) rotate(-1deg); }
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; }
+            50% { text-shadow: 0 0 20px #FF0000, 0 0 30px #FF0000, 0 0 40px #FF0000; }
+            100% { text-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000; }
+        }
+
+        @keyframes glitch {
+            0% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+            14% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+            15% { 
+                transform: translate(-0.025em, 0.025em);
+                text-shadow: -0.05em -0.025em 0 #FF0000, 0.025em 0.025em 0 #FF0000, -0.05em -0.05em 0 #FF0000;
+            }
+            49% { 
+                transform: translate(-0.025em, 0.025em);
+                text-shadow: -0.05em -0.025em 0 #FF0000, 0.025em 0.025em 0 #FF0000, -0.05em -0.05em 0 #FF0000;
+            }
+            50% { 
+                transform: translate(0.025em, -0.025em);
+                text-shadow: 0.025em 0.05em 0 #FF0000, 0.05em 0 0 #FF0000, 0 -0.05em 0 #FF0000;
+            }
+            99% { 
+                transform: translate(0.025em, -0.025em);
+                text-shadow: 0.025em 0.05em 0 #FF0000, 0.05em 0 0 #FF0000, 0 -0.05em 0 #FF0000;
+            }
+            100% { 
+                transform: translate(0);
+                text-shadow: 0.05em 0 0 #FF0000, -0.05em -0.025em 0 #FF0000, -0.025em 0.05em 0 #FF0000;
+            }
+        }
+
+        @keyframes bloodPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        @keyframes bloodDrip {
+            0% { transform: translateY(-100%) scaleY(0); opacity: 0; }
+            50% { transform: translateY(0) scaleY(1); opacity: 1; }
+            100% { transform: translateY(100%) scaleY(0); opacity: 0; }
+        }
+
+        @keyframes bloodSplash {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://crimson-traditional-mastodon-846.mypinata.cloud/ipfs/bafybeicpiafqkulvm6d2uwlm7g4reb2r6nozlvwoqeoufx3gdle3q2mnuq') repeat;
+            opacity: 0.3;
+            z-index: -1;
+            filter: contrast(1.5) brightness(0.7) saturate(2) hue-rotate(-10deg);
+            animation: flicker 5s infinite;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 0%, rgba(255, 0, 0, 0.1) 50%, transparent 100%);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        .title {
+            font-size: clamp(4rem, 12vw, 8rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #FF0000, #FF4500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 0 #000;
+            letter-spacing: 4px;
+            position: relative;
+            opacity: 1;
+            animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite, glitch 0.3s infinite;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100px;
+            background: linear-gradient(to bottom, #FF0000, transparent);
+            animation: bloodDrip 2s ease-in-out infinite;
+        }
+
+        .subtitle {
+            font-size: clamp(2rem, 6vw, 3rem);
+            margin-bottom: 2rem;
+            color: #FF0000;
+            animation: shake 0.5s ease-in-out infinite, glitch 0.3s infinite;
+            cursor: pointer;
+            text-shadow: 3px 3px 0 #000;
+            font-weight: 900;
+            letter-spacing: 2px;
+            transform: perspective(500px) rotateX(0deg);
+        }
+
+        .text {
+            font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 0 #000;
+            font-weight: 700;
+            position: relative;
+            letter-spacing: 1px;
+        }
+
+        .text:hover {
+            transform: scale(1.05) rotate(-1deg);
+            color: #FF0000;
+            animation: glitch 0.3s infinite;
+        }
+
+        .text::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #FF0000, transparent);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .text:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: clamp(1.2rem, 3.5vw, 1.8rem) clamp(2.5rem, 6vw, 3.5rem);
+            background: #8B0000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.7),
+                        inset 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transform: perspective(500px) rotateX(0deg);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 0, 0, 0.4) 0%, transparent 70%);
+            transform: rotate(45deg);
+            animation: rotate 3s linear infinite, bloodPulse 2s ease-in-out infinite;
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, #FF0000, transparent);
+            animation: bloodDrip 2s ease-in-out infinite;
+        }
+
+        .blood-drip:nth-child(1) { left: 10%; top: -20px; animation-delay: 0s; }
+        .blood-drip:nth-child(2) { left: 30%; top: -20px; animation-delay: 0.5s; }
+        .blood-drip:nth-child(3) { left: 50%; top: -20px; animation-delay: 1s; }
+        .blood-drip:nth-child(4) { left: 70%; top: -20px; animation-delay: 1.5s; }
+        .blood-drip:nth-child(5) { left: 90%; top: -20px; animation-delay: 2s; }
+
+        .blood-splash {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(139, 0, 0, 0.9) 0%, transparent 70%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            animation: bloodSplash 0.5s ease-out;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.1) rotate(-2deg);
+            background: #FF0000;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.8),
+                        inset 0 0 30px rgba(0, 0, 0, 0.6);
+            animation: bloodPulse 1s infinite;
+        }
+
+        .cta-button:hover::before {
+            animation: rotate 1s linear infinite, bloodPulse 1s ease-in-out infinite;
+        }
+
+        .cta-button:hover .blood-splash {
+            opacity: 1;
+            animation: bloodSplash 0.5s ease-out;
+        }
+
+        .cta-button:active {
+            transform: perspective(500px) rotateX(20deg) scale(0.95);
+            box-shadow: 0 0 50px rgba(139, 0, 0, 1),
+                        inset 0 0 40px rgba(0, 0, 0, 0.9);
+        }
+
+        .sound-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #FF0000;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .sound-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+
+        .sound-button.muted {
+            background: #666;
+        }
+
+        .blood-drop {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at center, #FF0000 0%, transparent 70%);
+            filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.5)) brightness(1.5) contrast(1.5);
+            animation: bloodDrop 4s ease-in-out infinite;
+        }
+
+        .blood-drop:nth-child(1) { 
+            top: 10%; 
+            left: 10%; 
+            animation-delay: 0s;
+            width: 40px;
+            height: 40px;
+        }
+        .blood-drop:nth-child(2) { 
+            top: 20%; 
+            right: 15%; 
+            animation-delay: 1s;
+            width: 35px;
+            height: 35px;
+        }
+        .blood-drop:nth-child(3) { 
+            bottom: 15%; 
+            left: 20%; 
+            animation-delay: 2s;
+            width: 45px;
+            height: 45px;
+        }
+        .blood-drop:nth-child(4) { 
+            bottom: 25%; 
+            right: 10%; 
+            animation-delay: 3s;
+            width: 38px;
+            height: 38px;
+        }
+
+        .blood-splatter {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+            background: 
+                radial-gradient(circle at 20% 20%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 80% 30%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 40% 70%, #FF0000 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, #FF0000 0%, transparent 50%);
+            filter: brightness(1.5) contrast(1.5);
+        }
+
+        /* Gallery Styles */
+        .gallery-section {
+            padding: 4rem 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .gallery-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #FF0000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glow 2s infinite;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+            transition: all 0.4s ease;
+            aspect-ratio: 1;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            color: #fff;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            z-index: 2;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        /* Improved Navigation */
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-menu a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-menu a:hover {
+            color: #FF0000;
+            animation: glow 1s infinite;
+        }
+
+        /* Responsive Design Improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            .hero {
+                padding: 0.5rem;
+            }
+            .blood-drop {
+                display: none;
+            }
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+            .nav-menu {
+                background: rgba(0, 0, 0, 0.9);
+                width: 100%;
+                text-align: center;
+                padding: 1rem 0;
+            }
+            .nav-menu a {
+                display: block;
+                margin: 1rem 0;
+            }
+        }
+
+        /* Comic Book Styles */
+        .comic-section {
+            padding: 4rem 2rem;
+            background: #000;
+            position: relative;
+        }
+
+        .comic-title {
+            font-size: clamp(3rem, 6vw, 5rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #FF0000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glow 2s infinite;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .comic-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comic-panel {
+            position: relative;
+            background: #fff;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .comic-panel:hover {
+            transform: scale(1.02);
+        }
+
+        .comic-panel img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .comic-text {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .comic-text::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 0%, rgba(255, 0, 0, 0.1) 100%);
+            pointer-events: none;
+        }
+
+        .comic-bubble {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @media (min-width: 768px) {
+            .comic-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .comic-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blood-splatter"></div>
+    <nav class="nav-menu">
+        <a href="#home">Home</a>
+        <a href="#comic">Comic</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="container">
+        <section id="home" class="hero">
+            <button id="soundToggle" class="sound-button">🔊</button>
+            <div class="blood-drop"></div>
+            <h1 class="title">BIRDZ</h1>
+            <h2 class="subtitle">You're a F#@%ING BIRD</h2>
+            <p class="text">
+                Welcome to the most epic bird community in the crypto world! 
+                We're not just any birds, we're BIRDZ - the most badass flock in the digital sky!
+            </p>
+            <p class="text">WE DON'T KNOW THE NAME. WE DON'T KNOW THE TEAM.<br>
+            But we do know one thing...</p>
+            <p class="text">Pigeon? Hawk? Chicken? BIRD-MAN??<br>
+            Doesn't matter.</p>
+            <p class="text">Feathers on. Brains off.<br>
+            BUY THIS COIN.</p>
+            <p class="text">It's not financial advice… it's instinct.</p>
+            <p class="text">COMING SOON.<br>
+            No roadmap. Just wing it.</p>
+            <a href="https://x.com/i/communities/1931814244913475609" class="cta-button" target="_blank">
+                Join X Community
+            </a>
+        </section>
+
+        <section id="comic" class="comic-section">
+            <h2 class="comic-title">The Great Birdz vs Apes Showdown</h2>
+            <div class="comic-grid">
+                <div class="comic-panel">
+                    <img src="images/1.jpg" alt="Comic Panel 1">
+                    <div class="comic-text">
+                        <p>On a regular day in the city, a member of the Birdz gang was casually strolling down the street, when suddenly...</p>
+                    </div>
+                </div>
+
+                <div class="comic-panel">
+                    <img src="images/2.jpg" alt="Comic Panel 2">
+                    <div class="comic-text">
+                        <p>...he encounters an Ape trying to act tough! "What are you looking at, little bird?" says the Ape.</p>
+                    </div>
+                </div>
+
+                <div class="comic-panel">
+                    <img src="images/3.jpg" alt="Comic Panel 3">
+                    <div class="comic-text">
+                        <p>The Birdz member isn't intimidated! "Little bird? I'm a real bird warrior!" and starts showing his powers.</p>
+                    </div>
+                </div>
+
+                <div class="comic-panel">
+                    <img src="images/4.jpg" alt="Comic Panel 4">
+                    <div class="comic-text">
+                        <p>The Ape tries to run, but the Birdz member is too fast! "Where do you think you're going, monkey?"</p>
+                    </div>
+                </div>
+
+                <div class="comic-panel">
+                    <img src="images/5.jpg" alt="Comic Panel 5">
+                    <div class="comic-text">
+                        <p>And BOOM! The Birdz member hits with a wing strike that could take down a grizzly!</p>
+                    </div>
+                </div>
+
+                <div class="comic-panel">
+                    <img src="images/6.jpg" alt="Comic Panel 6">
+                    <div class="comic-text">
+                        <p>And that's how the Ape's story ended... RIP in peace, little monkey! 🐒⚰️</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="gunshotSound" preload="auto">
+        <source src="https://www.soundjay.com/mechanical/sounds/gun-shot-01.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Create audio context
+        let audioContext;
+        let gunshotBuffer;
+
+        // Initialize audio
+        async function initAudio() {
+            try {
+                // Create audio context
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Resume audio context (needed for Chrome)
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                // Load and decode audio
+                const response = await fetch('https://www.soundjay.com/mechanical/sounds/gun-shot-01.mp3');
+                const arrayBuffer = await response.arrayBuffer();
+                gunshotBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                // Play immediately
+                playGunshot();
+            } catch (error) {
+                console.log('Error initializing audio:', error);
+            }
+        }
+
+        // Play gunshot sound
+        function playGunshot() {
+            if (!audioContext || !gunshotBuffer) return;
+            
+            const source = audioContext.createBufferSource();
+            const gainNode = audioContext.createGain();
+            
+            source.buffer = gunshotBuffer;
+            gainNode.gain.value = 1.0;
+            
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            source.start(0);
+        }
+
+        // Initialize on any user interaction
+        function initOnInteraction() {
+            if (!audioContext) {
+                initAudio();
+            }
+        }
+
+        // Add event listeners for user interaction
+        document.addEventListener('click', initOnInteraction);
+        document.addEventListener('keydown', initOnInteraction);
+        document.addEventListener('touchstart', initOnInteraction);
+        document.addEventListener('mousemove', initOnInteraction);
+        document.addEventListener('scroll', initOnInteraction);
+
+        // Try to initialize immediately
+        initAudio();
+
+        // Sound toggle button
+        const soundToggle = document.getElementById('soundToggle');
+        let isMuted = false;
+
+        soundToggle.addEventListener('click', function() {
+            isMuted = !isMuted;
+            if (isMuted) {
+                soundToggle.textContent = '🔇';
+                soundToggle.classList.add('muted');
+                if (audioContext) {
+                    audioContext.suspend();
+                }
+            } else {
+                soundToggle.textContent = '🔊';
+                soundToggle.classList.remove('muted');
+                if (audioContext) {
+                    audioContext.resume();
+                    playGunshot();
+                }
+            }
+        });
+
+        // Add gunshot to Telegram button
+        const telegramButton = document.querySelector('.cta-button');
+        telegramButton.addEventListener('click', function(e) {
+            if (!isMuted) {
+                playGunshot();
+            }
+        });
+
+        // Try to initialize multiple times
+        setTimeout(initAudio, 500);
+        setTimeout(initAudio, 1000);
+        setTimeout(initAudio, 1500);
+        setTimeout(initAudio, 2000);
+
+        // Force resume audio context periodically
+        setInterval(() => {
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }, 1000);
+    </script>
+</body>
+</html> 
