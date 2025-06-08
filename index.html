@@ -471,57 +471,6 @@
             transform: translateY(0);
         }
 
-        /* Improved Navigation */
-        .nav-menu {
-            position: fixed;
-            top: 0;
-            right: 0;
-            padding: 1rem;
-            z-index: 1000;
-        }
-
-        .nav-menu a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 2rem;
-            font-size: 1.2rem;
-            transition: color 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .nav-menu a:hover {
-            color: #FF0000;
-            animation: glow 1s infinite;
-        }
-
-        /* Responsive Design Improvements */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0.5rem;
-            }
-            .hero {
-                padding: 0.5rem;
-            }
-            .blood-drop {
-                display: none;
-            }
-            .gallery-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 1rem;
-            }
-            .nav-menu {
-                background: rgba(0, 0, 0, 0.9);
-                width: 100%;
-                text-align: center;
-                padding: 1rem 0;
-            }
-            .nav-menu a {
-                display: block;
-                margin: 1rem 0;
-            }
-        }
-
         /* Comic Book Styles */
         .comic-section {
             padding: 4rem 2rem;
@@ -612,17 +561,56 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        /* Copy CA Styles */
+        .ca-copy-section {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .ca-label {
+            color: #FF0000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        .ca-value {
+            background: #222;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            user-select: all;
+        }
+        .copy-ca-btn {
+            background: #FF0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem 1.2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .copy-ca-btn:hover {
+            background: #8B0000;
+        }
+        .copy-success {
+            color: #00FF00;
+            font-weight: bold;
+            margin-left: 0.5rem;
+            font-size: 1rem;
+            transition: opacity 0.3s;
+        }
     </style>
 </head>
 <body>
     <div class="blood-splatter"></div>
-    <nav class="nav-menu">
-        <a href="#home">Home</a>
-        <a href="#comic">Comic</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
-    </nav>
-
     <div class="container">
         <section id="home" class="hero">
             <button id="soundToggle" class="sound-button">🔊</button>
@@ -645,6 +633,13 @@
             <a href="https://x.com/i/communities/1931814244913475609" class="cta-button" target="_blank">
                 Join X Community
             </a>
+
+            <div class="ca-copy-section">
+                <span class="ca-label">CA:</span>
+                <span id="ca-value" class="ca-value">22ZsddxUPnsfGfkXWyhrEkPYeWatGW2jCSZxq9bmpump</span>
+                <button id="copy-ca-btn" class="copy-ca-btn">Copy CA</button>
+                <span id="copy-success" class="copy-success" style="display:none;">Copied!</span>
+            </div>
         </section>
 
         <section id="comic" class="comic-section">
@@ -803,6 +798,20 @@
                 audioContext.resume();
             }
         }, 1000);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyBtn = document.getElementById('copy-ca-btn');
+            const caValue = document.getElementById('ca-value');
+            const copySuccess = document.getElementById('copy-success');
+            if(copyBtn) {
+                copyBtn.addEventListener('click', function() {
+                    navigator.clipboard.writeText(caValue.textContent).then(function() {
+                        copySuccess.style.display = 'inline';
+                        setTimeout(() => { copySuccess.style.display = 'none'; }, 1500);
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html> 
